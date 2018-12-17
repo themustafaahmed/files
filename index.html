@@ -1,0 +1,102 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript">
+        function strpos(haystack, needle, offset) {
+            var i = (haystack + '').indexOf(needle, (offset || 0));
+            return i === -1 ? false : i;
+        }
+
+        function amzn() {
+            let url = document.getElementById('url1').value.toString();
+            if (url === '') {
+                return;
+            }
+            let asin = url.replace('/ref=as_li_tl', '').replace('/gp/product/', '').replace('https://www.amazon.com', '');
+            let _asin = asin.slice(0, 10);
+            $.ajax({
+                url: 'https://www.amazon.com/gp/product/' + _asin,
+                success: function (data) {
+                    $(document).ready(function () {
+                        let img = $(data).find('#coverArt_feature_div > img').attr("src");
+                        let type = $(data).find('.DigitalBuyButtonBuyBoxSection > span > span > a').html();
+                        let _type = null;
+                        if (strpos(type, 'Album')) {
+                            _type = 'album';
+                        } else if (strpos(type, 'song')) {
+                            _type = 'song';
+                        }
+                        document.getElementById("title").value = $(data).find('h1').html().replace('&amp;', '&');
+                        document.getElementById("author").value = $(data).find('#ProductInfoArtistLink').html().replace('&amp;', "&");
+                        document.getElementById("type").value = _type;
+                        document.getElementById("img").value = img.replace('_SS500', '_SS100');
+                        document.getElementById("asin").value = _asin;
+                        document.getElementById("url").value = url.replace('tag=amairo-20&camp=1789', 'tag={{tag}}&camp={{camp}}');
+                        document.getElementById("url1").value = '';
+                    });
+                }
+            });
+        }
+    </script>
+    <script>
+        function toggleDarkLight() {
+            var body = document.getElementById("body");
+            var currentClass = body.className;
+            body.className = currentClass == "dark-mode" ? "light-mode" : "dark-mode";
+        }
+    </script>
+    <style>
+        body.dark-mode {
+            background-color: #121212;
+            color: #eee;
+        }
+        body.dark-mode a {
+            color: #3ea6ff;
+        }
+        body.dark-mode button {
+            background-color: #eee;
+            color: #111;
+        }
+        body.dark-mode input {
+            background-color: #282828;
+            color: #eee;
+        }
+        body.dark-mode input[type=submit] {
+            background-color: #343434;
+            color: #717171;
+        }
+    </style>
+</head>
+<body id="body" class="dark-mode">
+<a href="http://repeat.eurocoders.com//crons/fetchAmazon.php">Go to Repeat</a>
+<br><br>
+<label>Url</label>
+<input type="text" size="190" id="url1">
+<br><br>
+<input type="submit" onclick="amzn()">
+<br><br>
+<form action="http://repeat.eurocoders.com/crons/fetchAmazon.php" method="post">
+    <input type="text" name="title" size="190" id="title">
+    <br><br>
+    <input type="text" name="author" size="190" id="author">
+    <br><br>
+    <input type="text" name="type" size="190" id="type">
+    <br><br>
+    <input type="text" name="artwork" size="190" id="img">
+    <br><br>
+    <input type="text" name="asin" size="190" id="asin">
+    <br><br>
+    <input type="text" name="url" size="190" id="url">
+    <br><br>
+    <input type="submit">
+</form>
+<button style="position:absolute;transition: .5s ease;top: 90%;left: 90%;" type="button" name="dark_light" onclick="toggleDarkLight()" title="Toggle dark/light mode">Dark Mode</button>
+</body>
+</html>
+
+<!--
+ $("#title").html($(data).find('h1').html());
+ $("#author").html($(data).find('#ProductInfoArtistLink').html());
+ $("#type").html($(data).find('.DigitalBuyButtonBuyBoxSection > span > span > a').html());
+ $("#img").html(resizedImg);-->
